@@ -11,8 +11,10 @@ namespace RDPManager.Model
         [XmlElement("RDPFileSearchPath")]
         public string RDPFileSearchPath { get; set; }
         [DefaultValue(true)]
+        [XmlElement("ExitOnSuccess")]
         public bool ExitOnSuccess { get; set; }
         [DefaultValue(@"%windir%\system32\mstsc.exe")]
+        [XmlElement("RDPApplicationPath")]
         public string RDPApplicationPath { get; set; }
 
         public AppSettings() : base()
