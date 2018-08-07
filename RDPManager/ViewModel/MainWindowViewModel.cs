@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,16 +26,24 @@ namespace RDPManager.ViewModel
             }
         }
 
+        private ActionCommand _openRDPCommand;
         public ICommand OpenRDPCommand
         {
             get
             {
-                return new ActionCommand(OpenRDP);
+                return _openRDPCommand;
             }
         }
 
-        private void OpenRDP()
+        public MainWindowViewModel()
         {
+            _openRDPCommand = new ActionCommand(OpenRDP);
+        }
+
+        private async void OpenRDP()
+        {
+            _openRDPCommand.Enabled = false;
+
             if (string.IsNullOrWhiteSpace(RDAddress))
             {
                 MessageBox.Show($"The address cannot be empty.", "Error");
@@ -63,7 +72,7 @@ namespace RDPManager.ViewModel
                     {
                         try
                         {
-                            ipAddress = Dns.GetHostAddresses(RDAddress).First();
+                            ipAddress = (await Dns.GetHostAddressesAsync(RDAddress)).First();
                         }
                         catch (System.Net.Sockets.SocketException e)
                         {
@@ -93,7 +102,8 @@ namespace RDPManager.ViewModel
                     if (_app.Settings.ExitOnSuccess) Environment.Exit(0);
                 }
             }
-            
+
+            _openRDPCommand.Enabled = true;
         }
     }
 }
