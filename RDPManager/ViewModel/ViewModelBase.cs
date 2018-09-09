@@ -6,6 +6,6 @@ namespace RDPManager.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void RaisePropertyChaged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        protected readonly App _app = ((App)App.Current);
+        protected readonly App app = ((App)App.Current);
     }
 }

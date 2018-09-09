@@ -1,5 +1,6 @@
 ﻿using RDPManager.Model;
 using RDPManager.Utilities;
+using RDPManager.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace RDPManager.ViewModel
 {
     internal class MainWindowViewModel : ViewModelBase
     {
+        #region UI Bindings
         private string _RDAddress;
         public string RDAddress
         {
@@ -35,9 +37,24 @@ namespace RDPManager.ViewModel
             }
         }
 
+        private ActionCommand _showOptionWindowCommand;
+        public ICommand ShowOptionsWindowCommand
+        {
+            get
+            {
+                return _showOptionWindowCommand;
+            }
+        }
+        #endregion
+
+        #region Private Properties
+        private OptionsWindow OptionsWindow;
+        #endregion
+
         public MainWindowViewModel()
         {
             _openRDPCommand = new ActionCommand(OpenRDP);
+            _showOptionWindowCommand = new ActionCommand(ShowOptionsWindow);
         }
 
         private async void OpenRDP()
@@ -50,7 +67,7 @@ namespace RDPManager.ViewModel
                 return;
             }
 
-            IEnumerable<RDPData> rdpDatas = RDPUtilities.ParseRDPFiles(_app.Settings.RDPFileSearchPath);
+            IEnumerable<RDPData> rdpDatas = RDPUtilities.ParseRDPFiles(app.Settings.RDPFileSearchPath);
 
             //Find RDPData by file name
             RDPData rdpData = RDPUtilities.GetRDPDataByFileName(rdpDatas, RDAddress);
@@ -91,7 +108,7 @@ namespace RDPManager.ViewModel
             if(rdpData != null)
             {
                 RDPUtilities.StartExistingRDP(rdpData.Path);
-                if (_app.Settings.ExitOnSuccess) Environment.Exit(0);
+                if (app.Settings.ExitOnSuccess) Environment.Exit(0);
             }
             else
             {
@@ -99,11 +116,17 @@ namespace RDPManager.ViewModel
                 if(result == MessageBoxResult.Yes)
                 {
                     RDPUtilities.StartNewRDP(RDAddress);
-                    if (_app.Settings.ExitOnSuccess) Environment.Exit(0);
+                    if (app.Settings.ExitOnSuccess) Environment.Exit(0);
                 }
             }
 
             _openRDPCommand.Enabled = true;
+        }
+
+        private void ShowOptionsWindow()
+        {
+            OptionsWindow = new OptionsWindow();
+            OptionsWindow.ShowDialog();
         }
     }
 }
