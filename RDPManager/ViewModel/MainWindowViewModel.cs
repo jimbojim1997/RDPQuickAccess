@@ -108,7 +108,7 @@ namespace RDPManager.ViewModel
             if(rdpData != null)
             {
                 RDPUtilities.StartExistingRDP(rdpData.Path);
-                if (app.Settings.ExitOnSuccess) Environment.Exit(0);
+                if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
             }
             else
             {
@@ -116,7 +116,7 @@ namespace RDPManager.ViewModel
                 if(result == MessageBoxResult.Yes)
                 {
                     RDPUtilities.StartNewRDP(RDAddress);
-                    if (app.Settings.ExitOnSuccess) Environment.Exit(0);
+                    if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
                 }
             }
 
