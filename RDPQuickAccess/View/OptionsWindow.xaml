@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:RDPQuickAccess.ViewModel"
         mc:Ignorable="d"
         Title="Options" Icon="/RDPQuickAccess;component/Resources/icon.png"
-        Height="210" Width="400" ResizeMode="NoResize" >
+        Height="365.25" Width="400" ResizeMode="NoResize" >
     <Window.DataContext>
         <viewModels:OptionsWindowViewModel />
     </Window.DataContext>
@@ -21,6 +21,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
@@ -53,6 +54,19 @@
                 <Border Grid.Column="1" Grid.Row="2">
                     <CheckBox IsChecked="{Binding ExitOnSuccess}" />
                 </Border>
+
+                <Border Grid.Column="0" Grid.Row="3" VerticalAlignment="Top">
+                    <Label >Register URI Scheme</Label>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="3">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap">
+                            Register the URI scheme:
+                            <TextBlock Text="{Binding UriScheme}" />
+                        </TextBlock>
+                        <Button Command="{Binding RegisterUriSchemeCommand}" IsEnabled="False">Register</Button>
+                    </StackPanel>
+                </Border>
             </Grid>
         </GroupBox>
         <Grid>
@@ -76,7 +90,7 @@
             </Grid.Resources>
 
             <Border Grid.Column="0" Grid.Row="0">
-                <Button Click="btnClose_Click">Cancel</Button>
+                <Button Click="btnClose_Click" Command="{Binding CloseSettingsCommand}" >Cancel</Button>
             </Border>
             <Border Grid.Column="1" Grid.Row="0">
                 <Button Click="btnSave_Click" Command="{Binding SaveSettingsCommand}">Save</Button>

@@ -1,4 +1,6 @@
-﻿namespace RDPQuickAccess.ViewModel
+﻿using System.Windows;
+
+namespace RDPQuickAccess.ViewModel
 {
     class OptionsWindowViewModel : ViewModelBase
     {
@@ -13,7 +15,7 @@
             set
             {
                 _RDPFileSearchPath = value;
-                RaisePropertyChaged("RDPFileSearchPath");
+                RaisePropertyChaged(nameof(RDPFileSearchPath));
             }
         }
 
@@ -27,7 +29,7 @@
             set
             {
                 _ExitOnSuccess = value;
-                RaisePropertyChaged("ExitOnSuccess");
+                RaisePropertyChaged(nameof(ExitOnSuccess));
             }
         }
 
@@ -41,7 +43,19 @@
             set
             {
                 _RDPApplicationPath = value;
-                RaisePropertyChaged("RDPApplicationPath");
+                RaisePropertyChaged(nameof(RDPApplicationPath));
+            }
+        }
+
+        private string _UriScheme;
+        public string UriScheme { get
+            {
+                return _UriScheme;
+            }
+            set
+            {
+                _UriScheme = value;
+                RaisePropertyChaged(nameof(UriScheme));
             }
         }
 
@@ -52,11 +66,20 @@
                 return new ActionCommand(SaveSettings);
             }
         }
+
+        public ActionCommand RegisterUriSchemeCommand
+        {
+            get
+            {
+                return new ActionCommand(RegisterUriScheme);
+            }
+        }
         #endregion
 
         public OptionsWindowViewModel()
         {
             LoadSettings();
+            UriScheme = System.Configuration.ConfigurationManager.AppSettings["UriScheme"];
         }
 
         private void LoadSettings()
@@ -71,6 +94,11 @@
             app.Settings.RDPFileSearchPath = RDPFileSearchPath;
             app.Settings.RDPApplicationPath = RDPApplicationPath;
             app.Settings.ExitOnSuccess = ExitOnSuccess;
+        }
+
+        private void RegisterUriScheme()
+        {
+            Utilities.RegistryUtilities.RegisterUriScheme(UriScheme, "");
         }
     }
 }

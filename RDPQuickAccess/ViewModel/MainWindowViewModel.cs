@@ -24,7 +24,7 @@ namespace RDPQuickAccess.ViewModel
             set
             {
                 _RDAddress = value;
-                RaisePropertyChaged(value);
+                RaisePropertyChaged(nameof(RDAddress));
             }
         }
 
@@ -55,72 +55,88 @@ namespace RDPQuickAccess.ViewModel
         {
             _openRDPCommand = new ActionCommand(OpenRDP);
             _showOptionWindowCommand = new ActionCommand(ShowOptionsWindow);
+
+            string[] args = Environment.GetCommandLineArgs();
+            if(args.Length > 1)
+            {
+                RDAddress = args[1];
+                _openRDPCommand.Execute(null);
+            }
         }
 
         private async void OpenRDP()
         {
-            _openRDPCommand.Enabled = false;
-
-            if (string.IsNullOrWhiteSpace(RDAddress))
+            try
             {
-                MessageBox.Show($"The address cannot be empty.", "Error");
-                return;
-            }
+                _openRDPCommand.Enabled = false;
 
-            IEnumerable<RDPData> rdpDatas = RDPUtilities.ParseRDPFiles(app.Settings.RDPFileSearchPath);
+                if (string.IsNullOrWhiteSpace(RDAddress))
+                {
+                    MessageBox.Show($"The address cannot be empty.", "Error");
+                    return;
+                }
 
-            //Find RDPData by file name
-            RDPData rdpData = RDPUtilities.GetRDPDataByFileName(rdpDatas, RDAddress);
+                string uriScheme = System.Configuration.ConfigurationManager.AppSettings["UriScheme"];
+                RDAddress = RDAddress.Replace($"{uriScheme}:", "");
 
-            //Find RDPData by domain
-            if(rdpData == null)
-            {
-                rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", RDAddress));
-            }
+                IEnumerable<RDPData> rdpDatas = RDPUtilities.ParseRDPFiles(app.Settings.RDPFileSearchPath);
 
-            //Find RDPData by IP
-            if (rdpData == null)
-            {
-                IPAddress ipAddress;
-                string[] addressParts = RDAddress.Split(':');
-                if (addressParts.Length >= 1) {
-                    IPAddress.TryParse(addressParts[0], out ipAddress);
-                    if (ipAddress == null)
+                //Find RDPData by file name
+                RDPData rdpData = RDPUtilities.GetRDPDataByFileName(rdpDatas, RDAddress);
+
+                //Find RDPData by domain
+                if (rdpData == null)
+                {
+                    rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", RDAddress));
+                }
+
+                //Find RDPData by IP
+                if (rdpData == null)
+                {
+                    IPAddress ipAddress;
+                    string[] addressParts = RDAddress.Split(':');
+                    if (addressParts.Length >= 1)
                     {
-                        try
+                        IPAddress.TryParse(addressParts[0], out ipAddress);
+                        if (ipAddress == null)
                         {
-                            ipAddress = (await Dns.GetHostAddressesAsync(RDAddress)).First();
+                            try
+                            {
+                                ipAddress = (await Dns.GetHostAddressesAsync(RDAddress)).First();
+                            }
+                            catch (System.Net.Sockets.SocketException e)
+                            {
+                            }
                         }
-                        catch (System.Net.Sockets.SocketException e)
+                        if (ipAddress != null)
                         {
+                            string address = ipAddress.ToString();
+                            if (addressParts.Length >= 2) address += $":{addressParts[1]}";
+                            rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", address));
                         }
-                    }
-                    if (ipAddress != null)
-                    {
-                        string address = ipAddress.ToString();
-                        if (addressParts.Length >= 2) address += $":{addressParts[1]}";
-                        rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", address));
                     }
                 }
-            }
 
-            //Start the RDP session
-            if(rdpData != null)
-            {
-                RDPUtilities.StartExistingRDP(rdpData.Path);
-                if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
-            }
-            else
-            {
-                MessageBoxResult result = MessageBox.Show($"Unable to find RDPfile for '{RDAddress}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
-                if(result == MessageBoxResult.Yes)
+                //Start the RDP session
+                if (rdpData != null)
                 {
-                    RDPUtilities.StartNewRDP(RDAddress);
+                    RDPUtilities.StartExistingRDP(rdpData.Path);
                     if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
                 }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show($"Unable to find RDPfile for '{RDAddress}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        RDPUtilities.StartNewRDP(RDAddress);
+                        if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
+                    }
+                }
             }
-
-            _openRDPCommand.Enabled = true;
+            finally
+            {
+                _openRDPCommand.Enabled = true;
+            }
         }
 
         private void ShowOptionsWindow()
