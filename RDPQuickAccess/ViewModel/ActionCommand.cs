@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace RDPManager.ViewModel
+namespace RDPQuickAccess.ViewModel
 {
     internal class ActionCommand : ICommand
     {

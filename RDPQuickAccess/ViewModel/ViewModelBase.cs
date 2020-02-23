@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace RDPManager.ViewModel
+namespace RDPQuickAccess.ViewModel
 {
     internal abstract class ViewModelBase : INotifyPropertyChanged
     {

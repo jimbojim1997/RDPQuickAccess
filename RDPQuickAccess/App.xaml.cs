@@ -1,8 +1,8 @@
-﻿using RDPManager.Model;
+﻿using RDPQuickAccess.Model;
 using System.Configuration;
 using System.Windows;
 
-namespace RDPManager
+namespace RDPQuickAccess
 {
     /// <summary>
     /// Interaction logic for App.xaml

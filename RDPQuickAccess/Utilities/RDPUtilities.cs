@@ -1,11 +1,11 @@
-﻿using RDPManager.Model;
+﻿using RDPQuickAccess.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 
-namespace RDPManager.Utilities
+namespace RDPQuickAccess.Utilities
 {
     internal static class RDPUtilities
     {

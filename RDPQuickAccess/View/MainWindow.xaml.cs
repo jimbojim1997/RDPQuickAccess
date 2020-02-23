@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace RDPManager.View
+namespace RDPQuickAccess.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

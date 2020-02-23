@@ -1,9 +1,9 @@
-# RPDManager
+# RDPQuickAccess
 
 Opens RDP session based on filename, host name or IP address for existing RDP files in the specified directory or a new one if an existing one can't be found.
 
 ## Settings
-The settings file is located at `%appdata\RDPManager\settings.xml`
+The settings file is located at `%appdata\RDPQuickAccess\settings.xml`
 
 `RDPFileSearchPath`    
 - Type: `string`
@@ -13,7 +13,7 @@ The settings file is located at `%appdata\RDPManager\settings.xml`
 `ExitOnSuccess`    
 - Type: `bool`
 - Default Value: `true`
-- Description: Close RDPManager if an existing RDP file is found or if a new one is started.
+- Description: Close RDPQuickAccess if an existing RDP file is found or if a new one is started.
 
 `RDPApplicationPath`    
 - Type: `string`

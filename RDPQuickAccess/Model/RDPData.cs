@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RDPManager.Model
+namespace RDPQuickAccess.Model
 {
     internal class RDPData
     {

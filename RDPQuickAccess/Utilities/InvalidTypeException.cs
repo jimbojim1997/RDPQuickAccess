@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RDPManager.Utilities
+namespace RDPQuickAccess.Utilities
 {
     class InvalidTypeException : Exception
     {

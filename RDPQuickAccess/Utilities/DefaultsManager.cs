@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace RDPManager.Utilities
+namespace RDPQuickAccess.Utilities
 {
     public abstract class DefaultsManager
     {

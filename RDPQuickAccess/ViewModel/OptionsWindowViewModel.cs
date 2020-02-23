@@ -1,4 +1,4 @@
-﻿namespace RDPManager.ViewModel
+﻿namespace RDPQuickAccess.ViewModel
 {
     class OptionsWindowViewModel : ViewModelBase
     {

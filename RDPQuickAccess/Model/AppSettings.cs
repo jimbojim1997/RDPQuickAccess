@@ -1,9 +1,9 @@
-﻿using RDPManager.Utilities;
+﻿using RDPQuickAccess.Utilities;
 using System;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
-namespace RDPManager.Model
+namespace RDPQuickAccess.Model
 {
     public class AppSettings : DefaultsManager
     {
