@@ -55,13 +55,6 @@ namespace RDPQuickAccess.ViewModel
         {
             _openRDPCommand = new ActionCommand(OpenRDP);
             _showOptionWindowCommand = new ActionCommand(ShowOptionsWindow);
-
-            string[] args = Environment.GetCommandLineArgs();
-            if(args.Length > 1)
-            {
-                RDAddress = args[1];
-                _openRDPCommand.Execute(null);
-            }
         }
 
         private async void OpenRDP()
@@ -69,68 +62,23 @@ namespace RDPQuickAccess.ViewModel
             try
             {
                 _openRDPCommand.Enabled = false;
-
-                if (string.IsNullOrWhiteSpace(RDAddress))
+                OpenRdpResult result = await RdpUtilities.OpenRdp(RDAddress, app.Settings.RDPFileSearchPath);
+                switch (result)
                 {
-                    MessageBox.Show($"The address cannot be empty.", "Error");
-                    return;
-                }
-
-                string uriScheme = System.Configuration.ConfigurationManager.AppSettings["UriScheme"];
-                RDAddress = RDAddress.Replace($"{uriScheme}:", "");
-
-                IEnumerable<RDPData> rdpDatas = RDPUtilities.ParseRDPFiles(app.Settings.RDPFileSearchPath);
-
-                //Find RDPData by file name
-                RDPData rdpData = RDPUtilities.GetRDPDataByFileName(rdpDatas, RDAddress);
-
-                //Find RDPData by domain
-                if (rdpData == null)
-                {
-                    rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", RDAddress));
-                }
-
-                //Find RDPData by IP
-                if (rdpData == null)
-                {
-                    IPAddress ipAddress;
-                    string[] addressParts = RDAddress.Split(':');
-                    if (addressParts.Length >= 1)
-                    {
-                        IPAddress.TryParse(addressParts[0], out ipAddress);
-                        if (ipAddress == null)
-                        {
-                            try
-                            {
-                                ipAddress = (await Dns.GetHostAddressesAsync(RDAddress)).First();
-                            }
-                            catch (System.Net.Sockets.SocketException e)
-                            {
-                            }
-                        }
-                        if (ipAddress != null)
-                        {
-                            string address = ipAddress.ToString();
-                            if (addressParts.Length >= 2) address += $":{addressParts[1]}";
-                            rdpData = RDPUtilities.GetRDPDataByKeyValue(rdpDatas, new KeyValuePair<string, string>("full address", address));
-                        }
-                    }
-                }
-
-                //Start the RDP session
-                if (rdpData != null)
-                {
-                    RDPUtilities.StartExistingRDP(rdpData.Path);
-                    if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
-                }
-                else
-                {
-                    MessageBoxResult result = MessageBox.Show($"Unable to find RDPfile for '{RDAddress}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        RDPUtilities.StartNewRDP(RDAddress);
+                    case OpenRdpResult.Success:
                         if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
-                    }
+                        break;
+                    case OpenRdpResult.EmptyAddress:
+                        MessageBox.Show($"The address cannot be empty.", "Error");
+                        break;
+                    case OpenRdpResult.NotFound:
+                        MessageBoxResult messageBoxResult = MessageBox.Show($"Unable to find RDPfile for '{RDAddress}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
+                        if (messageBoxResult == MessageBoxResult.Yes)
+                        {
+                            RdpUtilities.StartNewRDP(RDAddress);
+                            if (app.Settings.ExitOnSuccess) App.Current.Shutdown();
+                        }
+                        break;
                 }
             }
             finally

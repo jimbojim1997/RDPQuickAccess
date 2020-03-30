@@ -100,6 +100,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utilities\RdpOpenResult.cs" />
     <Compile Include="Utilities\RegistryUtilities.cs" />
     <Compile Include="ViewModel\OptionsWindowViewModel.cs" />
     <Compile Include="View\OptionsWindow.xaml.cs">
@@ -114,10 +115,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\AppSettings.cs" />
-    <Compile Include="Model\RDPData.cs" />
+    <Compile Include="Model\RdpData.cs" />
     <Compile Include="Utilities\DefaultsManager.cs" />
     <Compile Include="Utilities\InvalidTypeException.cs" />
-    <Compile Include="Utilities\RDPUtilities.cs" />
+    <Compile Include="Utilities\RdpUtilities.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="ViewModel\ActionCommand.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />

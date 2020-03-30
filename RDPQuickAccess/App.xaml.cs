@@ -1,4 +1,6 @@
 ﻿using RDPQuickAccess.Model;
+using RDPQuickAccess.Utilities;
+using System;
 using System.Configuration;
 using System.Windows;
 
@@ -12,10 +14,40 @@ namespace RDPQuickAccess
         private readonly string _settingsPath = ConfigurationManager.AppSettings["SettingsPath"];
         internal AppSettings Settings;
 
-        private void App_Startup(object sender, StartupEventArgs e)
+        private async void App_Startup(object sender, StartupEventArgs e)
         {
             Settings = AppSettings.LoadFromFile(_settingsPath);
             if (Settings == null) Settings = new AppSettings();
+
+            var mainWindow = new View.MainWindow();
+            mainWindow.ViewModel = new ViewModel.MainWindowViewModel();
+
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 1)
+            {
+                string address = args[1];
+                string uriScheme = ConfigurationManager.AppSettings["UriScheme"];
+                address = address.Replace($"{uriScheme}:", "");
+                OpenRdpResult openRdpResult = await RdpUtilities.OpenRdp(address, Settings.RDPFileSearchPath);
+
+                switch (openRdpResult)
+                {
+                    case OpenRdpResult.Success:
+                        if (Settings.ExitOnSuccess) App.Current.Shutdown();
+                        break;
+                    case OpenRdpResult.NotFound:
+                        mainWindow.ViewModel.RDAddress = address;
+                        MessageBoxResult messageBoxResult = MessageBox.Show($"Unable to find RDPfile for '{address}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
+                        if (messageBoxResult == MessageBoxResult.Yes)
+                        {
+                            RdpUtilities.StartNewRDP(address);
+                            if (Settings.ExitOnSuccess) App.Current.Shutdown();
+                        }
+                        break;
+                }
+            }
+
+            mainWindow.Show();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

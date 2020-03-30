@@ -2,17 +2,17 @@
 
 namespace RDPQuickAccess.Model
 {
-    internal class RDPData
+    internal class RdpData
     {
         public string Path {get; set; }
         public Dictionary<string, string> Properties { get; set; }
 
-        public RDPData()
+        public RdpData()
         {
             Properties = new Dictionary<string, string>();
         }
 
-        public RDPData(string path, Dictionary<string, string> properties)
+        public RdpData(string path, Dictionary<string, string> properties)
         {
             Path = path;
             Properties = properties;

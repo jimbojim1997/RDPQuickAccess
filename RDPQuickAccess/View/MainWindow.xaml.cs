@@ -7,14 +7,15 @@ namespace RDPQuickAccess.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        internal ViewModel.MainWindowViewModel ViewModel
+        {
+            get => DataContext as ViewModel.MainWindowViewModel;
+            set => DataContext = value;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
