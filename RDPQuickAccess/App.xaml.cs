@@ -22,6 +22,8 @@ namespace RDPQuickAccess
             var mainWindow = new View.MainWindow();
             mainWindow.ViewModel = new ViewModel.MainWindowViewModel();
 
+            bool exitApp = false;
+
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
@@ -33,21 +35,23 @@ namespace RDPQuickAccess
                 switch (openRdpResult)
                 {
                     case OpenRdpResult.Success:
-                        if (Settings.ExitOnSuccess) App.Current.Shutdown();
+                        if (Settings.ExitOnSuccess) exitApp = true;
                         break;
                     case OpenRdpResult.NotFound:
-                        mainWindow.ViewModel.RDAddress = address;
                         MessageBoxResult messageBoxResult = MessageBox.Show($"Unable to find RDPfile for '{address}'.\nOpen new session?", "Information", MessageBoxButton.YesNo);
                         if (messageBoxResult == MessageBoxResult.Yes)
                         {
                             RdpUtilities.StartNewRDP(address);
-                            if (Settings.ExitOnSuccess) App.Current.Shutdown();
+                            if (Settings.ExitOnSuccess) exitApp = true;
                         }
                         break;
                 }
+
+                mainWindow.ViewModel.RDAddress = address;
             }
 
-            mainWindow.Show();
+            if (exitApp) App.Current.Shutdown();
+            else mainWindow.Show();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
